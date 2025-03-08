@@ -10,7 +10,7 @@ namespace Api.Extensions
             using (var scope = app.Services.CreateScope()) 
             {
                 var context = scope.ServiceProvider.GetRequiredService<BenefitsDbContext>();
-                //context.Database.EnsureCreated();
+                context.Database.EnsureCreated();
 
                 if (!context.Employees.Any())
                 {
@@ -56,7 +56,16 @@ namespace Api.Extensions
                                     LastName = "Morant",
                                     Relationship = Relationship.Child,
                                     DateOfBirth = new DateTime(2021, 5, 18)
-                                }
+                                },
+                                // should faild during ValidateDependents() call
+                                //new()
+                                //{
+                                //    Id = 5,
+                                //    FirstName = "failing spouse",
+                                //    LastName = "should fail",
+                                //    Relationship = Relationship.DomesticPartner,
+                                //    DateOfBirth = new DateTime(2021, 5, 18)
+                                //}
                             }
                         },
                         new()
