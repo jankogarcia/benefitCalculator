@@ -1,3 +1,8 @@
+using Api.Data;
+using Api.Extensions;
+using Api.Repositories;
+using Api.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +23,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// adding inmemory db 
+builder.Services.AddDbContext<BenefitsDbContext>(opt => { opt.UseInMemoryDatabase("BenefitsDb"); });
+
+// adding services and repos
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IDependentRepository, DependentRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDependentService, DependentService>();
+
+// adding the time provider to be used in Employee service
+builder.Services.AddSingleton(TimeProvider.System);
+
 var allowLocalhost = "allow localhost";
 builder.Services.AddCors(options =>
 {
@@ -32,6 +49,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    // seeding database
+    app.SeedDataBase();
 }
 
 app.UseCors(allowLocalhost);
